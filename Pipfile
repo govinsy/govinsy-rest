@@ -5,6 +5,11 @@ name = "pypi"
 
 [packages]
 django = "*"
+mysqlclient = "*"
+numpy = "*"
+pandas = "*"
+matplotlib = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
