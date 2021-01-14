@@ -19,7 +19,7 @@ def index(request):
     indonesia = get_data('https://api.covid19api.com/dayone/country/indonesia', './data/indonesia.json')
 
     # Create plot
-    create_plot(data)
+    create_plot(data, indonesia)
 
     # Variable Declaration
     X = data[['Deaths', 'Recovered', 'Active']].values[100:]
@@ -63,6 +63,8 @@ def index(request):
         },
         'predict_plot': request.build_absolute_uri('/static/img/predict.jpg'),
         'compare_plot': request.build_absolute_uri('/static/img/compare.jpg'),
+        'indo_plot': request.build_absolute_uri('/static/img/indo.jpg'),
+        'indo_predict_plot': request.build_absolute_uri('/static/img/indo_predict.jpg'),
         'accuracy': accuracy
     }
     return HttpResponse(json.dumps(res), content_type="application/json")
@@ -74,7 +76,7 @@ def get_data(url, filepath):
         print("\nGagal mengambil data terbaru, periksa koneksi!\n") 
     return pd.read_json(filepath)
 
-def create_plot(data):
+def create_plot(data, indonesia):
     date = data.Date + timedelta(60)
     plt.title('Prediction')
     plt.xticks(rotation=90)
@@ -84,4 +86,26 @@ def create_plot(data):
     plt.plot(date[270:], data.Active[270:])
     plt.legend(['Confirmed', 'Deaths', 'Recovered', 'Active'])
     plt.savefig('./static/img/predict.jpg',  bbox_inches='tight')
+    plt.clf()
+    plt.title('Indonesia')
+    plt.xticks(rotation=90)
+    plt.plot(indonesia.Date, indonesia.Confirmed)
+    plt.plot(indonesia.Date, indonesia.Deaths)
+    plt.plot(indonesia.Date, indonesia.Recovered)
+    plt.plot(indonesia.Date, indonesia.Active)
+    plt.legend(['Confirmed', 'Deaths', 'Recovered', 'Active'])
+    plt.savefig('./static/img/indo.jpg',  bbox_inches='tight')
+    plt.clf()
+    plt.title('Indonesia with Prediction')
+    plt.xticks(rotation=90)
+    plt.plot(indonesia.Date, indonesia.Confirmed)
+    plt.plot(indonesia.Date, indonesia.Deaths)
+    plt.plot(indonesia.Date, indonesia.Recovered)
+    plt.plot(indonesia.Date, indonesia.Active)
+    plt.plot(date[280:], data.Confirmed[280:])
+    plt.plot(date[280:], data.Deaths[280:])
+    plt.plot(date[280:], data.Recovered[280:])
+    plt.plot(date[280:], data.Active[280:])
+    plt.legend(['Confirmed', 'Deaths', 'Recovered', 'Active', 'Pred. Confirmed', 'Pred. Deaths', 'Pred. Recovered', 'Pred. Active'])
+    plt.savefig('./static/img/indo_predict.jpg',  bbox_inches='tight')
     plt.clf()
